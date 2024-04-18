@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    .container {
+      width: 400px;
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .expense-form {
+      display: flex;
+      flex-direction: column;
+    }
+    .expense-form input[type="text"],
+    .expense-form input[type="number"],
+    .expense-form button {
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    .expense-form input[type="text"],
+    .expense-form input[type="number"] {
+      outline: none;
+    }
+    .expense-form button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .expense-form button:hover {
+      background-color: #45a049;
+    }
+    .expenses-list {
+      margin-top: 20px;
+      padding: 0;
+    }
+    .expenses-list li {
+      list-style: none;
+      border-bottom: 1px solid #ccc;
+      padding: 10px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .expenses-list li:last-child {
+      border-bottom: none;
+    }
+    .delete-btn {
+      background-color: #ff6347;
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: 5px;
+    }
+    .delete-btn:hover {
+      background-color: #e74c3c;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Expense Tracker</h1>
+    <form class="expense-form">
+      <input type="text" id="description" placeholder="Description">
+      <input type="number" id="amount" placeholder="Amount">
+      <button type="button" onclick="addExpense()">Add Expense</button>
+    </form>
+    <ul class="expenses-list" id="expenses-list"></ul>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Load expenses from local storage
+      const expenses = JSON.parse(localStorage.getItem("expenses")) || [];
+      renderExpenses(expenses);
+    });
+
+    function renderExpenses(expenses) {
+      const expensesList = document.getElementById("expenses-list");
+      expensesList.innerHTML = "";
+      expenses.forEach((expense, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span>${expense.description}: $${expense.amount}</span>
+          <button class="delete-btn" onclick="deleteExpense(${index})">Delete</button>
+        `;
+        expensesList.appendChild(li);
+      });
+    }
+
+    function addExpense() {
+      const descriptionInput = document.getElementById("description");
+      const amountInput = document.getElementById("amount");
+
+      const description = descriptionInput.value.trim();
+      const amount = parseFloat(amountInput.value.trim());
+
+      if (description !== "" && !isNaN(amount) && amount > 0) {
+        const expense = { description, amount };
+        const expenses = JSON.parse(localStorage.getItem("expenses")) || [];
+        expenses.push(expense);
+        localStorage.setItem("expenses", JSON.stringify(expenses));
+        renderExpenses(expenses);
+
+        // Clear input fields
+        descriptionInput.value = "";
+        amountInput.value = "";
+      } else {
+        alert("Please enter valid description and amount.");
+      }
+    }
+
+    function deleteExpense(index) {
+      const expenses = JSON.parse(localStorage.getItem("expenses")) || [];
+      expenses.splice(index, 1);
+      localStorage.setItem("expenses", JSON.stringify(expenses));
+      renderExpenses(expenses);
+    }
+  </script>
+</body>
+</html>
